@@ -55,6 +55,11 @@ class ViewController: UIViewController {
     
     
     @IBAction func _signIn(_ sender: Any) {
+        if !modesel.isOn
+        {
+        self.performSegue(withIdentifier: "_toHome", sender: self) 
+        return
+        }
         let defaults = UserDefaults.standard
         defaults.set(uname.text,forKey:"username")
         defaults.set(pass.text,forKey:"password")

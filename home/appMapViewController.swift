@@ -10,6 +10,12 @@ import UIKit
 import CoreData
 
 class appMapViewController:UIViewController,UIPickerViewDelegate,UIPickerViewDataSource {
+    @IBAction func loadCourse(_ sender: Any)
+    {
+    performSegue(withIdentifier: "_toMain", sender: self)
+    }
+    @IBOutlet weak var btnLoad: UIButton!
+    
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
@@ -22,9 +28,8 @@ class appMapViewController:UIViewController,UIPickerViewDelegate,UIPickerViewDat
         return viewOptions[row]
     }
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-       /*UIAlertView(title: "Selection", message: viewOptions[row], delegate: nil, cancelButtonTitle: "OK").show()*/
-        self.courseid = viewOptions[row]
-        performSegue(withIdentifier: "_toMain", sender: self)
+       self.courseid = viewOptions[row]
+        
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
        if segue.destination is mainViewController
@@ -93,17 +98,22 @@ class appMapViewController:UIViewController,UIPickerViewDelegate,UIPickerViewDat
     
         if let feedback = try? JSONDecoder().decode(reply.self,from:data)
         {
+            self.clearStore(verbosity: 0)
             DispatchQueue.main.async {
                 if !feedback.data.isEmpty
                 {
                     self.picker.delegate = self
                     self.picker.dataSource = self
                     for details in feedback.data
-                  {
-                    self.viewOptions.append(details.code)
-                  }
-        UIAlertView(title: "Message", message: "Courses successfully loaded", delegate: nil, cancelButtonTitle: "OK").show()
-                    self.commit(courses: feedback.data)
+                    {
+                 self.viewOptions.append(details.code)
+                    }
+           let commitState = self.commit(courses: feedback.data)
+                    if commitState {
+        UIAlertView(title: "Message", message: "Courses successfully loaded", delegate: nil, cancelButtonTitle: "OK").show()                    }
+                    else {
+  UIAlertView(title: "Message", message: "Cache unsuccessful", delegate: nil, cancelButtonTitle: "OK").show()
+                    }
         /*{
          UIAlertView(title: "Message", message: "Success Saving Data", delegate: nil, cancelButtonTitle: "OK").show()
         }
@@ -129,9 +139,11 @@ class appMapViewController:UIViewController,UIPickerViewDelegate,UIPickerViewDat
     let entity = NSEntityDescription.entity(forEntityName:"COURSE",in:context)
     for details in courses
     {
+    
     let newcourse = NSManagedObject(entity:entity!,insertInto:context)
     newcourse.setValue(details.code,forKey:"courseid")
     newcourse.setValue(details.description,forKey:"courseinfo")
+        
     }
         do
         {
@@ -143,8 +155,9 @@ class appMapViewController:UIViewController,UIPickerViewDelegate,UIPickerViewDat
         }
     return success
     }
-    func clearStore()
+    func clearStore(verbosity:Int) -> Bool
     {
+        var success = true
         let appDel = UIApplication.shared.delegate as! AppDelegate
         let context = appDel.persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "COURSE")
@@ -152,17 +165,22 @@ class appMapViewController:UIViewController,UIPickerViewDelegate,UIPickerViewDat
         do
         {
           try context.execute(batchDeleteRequest)
-          UIAlertView(title: "Message", message: "Success Deleting", delegate: nil, cancelButtonTitle: "OK").show()
+            if verbosity == 1
+            {
+                UIAlertView(title: "Message", message: "Success Deleting", delegate: nil, cancelButtonTitle: "OK").show()
+                
+            }
             
         }
         catch
         {
-        
+        success = false
         }
-        
+        return success
     }
-    func fetchData()
+    func fetchData() -> [String]
     {
+     var ids = [String]()
      let appDel = UIApplication.shared.delegate as! AppDelegate
      let context = appDel.persistentContainer.viewContext
      let frequest = NSFetchRequest<NSFetchRequestResult>(entityName: "COURSE")
@@ -177,11 +195,13 @@ class appMapViewController:UIViewController,UIPickerViewDelegate,UIPickerViewDat
         {
             let ccode = data.value(forKey: "courseid") as! String
             self.viewOptions.append(ccode)
+            ids.append(ccode)
             }
     }
      catch
      {
         
      }
+        return ids
     }
 }

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class mainViewController: UIViewController {
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
@@ -17,6 +18,7 @@ class mainViewController: UIViewController {
     @IBOutlet weak var uiTextView: UITextView!
     @IBOutlet weak var qindex: UILabel!
     var qno = 0
+    var errors = ""
     var oldVal:Double=0
     var courseId:String = "MIT802"
     var entries:[entry] = [entry]()
@@ -27,7 +29,7 @@ class mainViewController: UIViewController {
     }
     struct entry:Codable
     {
-        let qid:Int
+        var qid:Int
         let course:String
         let description:String
         let answer:String
@@ -35,9 +37,9 @@ class mainViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        qindex.text = "Fetching Questions......"
         activityIndicator.hidesWhenStopped = true
         oldVal = uiStepper.value
-        //uiStepper.minimumValue = 0
         fetchAnswer()
         
         // Do any additional setup after loading the view.
@@ -98,8 +100,10 @@ class mainViewController: UIViewController {
             {
                 DispatchQueue.main.async
                     {
-                        //self.fetchData()
-                        UIAlertView(title: "Feedback", message:"Could not fetch entries", delegate: nil, cancelButtonTitle: "OK").show()
+                        self.fetchData()
+                        self.uiTextView.text = self.entries[self.qno].description
+                        self.qindex.text = String(self.entries.count) + " questions"
+                        UIAlertView(title: "Feedback", message:"Could not fetch entries..using cached version", delegate: nil, cancelButtonTitle: "OK").show()
                         self.activityIndicator.stopAnimating()
                 }
                 return
@@ -107,17 +111,25 @@ class mainViewController: UIViewController {
             
             if let feedback = try? JSONDecoder().decode(reply.self,from:data)
             {
+                self.clearStore(verbosity: 0)
                 DispatchQueue.main.async {
                     if !feedback.data.isEmpty
                     {
+                        do{
                         for eachEntry in feedback.data
                         {
                             self.entries.append(eachEntry)
                         }
                         self.uiTextView.text = self.entries[self.qno].description
                         self.qindex.text = String(self.entries.count) + " questions"
+                            if !self.persistEntres() {throw NSError(domain: "Caching unsuccessful", code: 41, userInfo: nil)}
                         UIAlertView(title: "Message", message: "Questions loaded successfully", delegate: nil, cancelButtonTitle: "OK").show()
-                        //self.commit(courses: feedback.data)
+                        
+                        }
+                        catch _ as NSError
+                        {
+                       UIAlertView(title: "Message", message: self.errors, delegate: nil, cancelButtonTitle: "OK").show()
+                        }
                         
                     }
                     else
@@ -131,8 +143,82 @@ class mainViewController: UIViewController {
             
             }.resume()
     }
-
-    /*
+    func persistEntres() -> Bool
+    {
+        var success:Bool = true
+        let appDel = UIApplication.shared.delegate as! AppDelegate
+        let context = appDel.persistentContainer.viewContext
+        let entity = NSEntityDescription.entity(forEntityName:"QINF",in:context)
+        for details in entries
+        {
+            let newcourse = NSManagedObject(entity:entity!,insertInto:context)
+            newcourse.setValue(String(details.qid),forKey:"qid")
+            newcourse.setValue(details.description,forKey:"question")
+            newcourse.setValue(details.answer,forKey:"answer")
+            newcourse.setValue(details.imageurl,forKey:"imageurl")
+            newcourse.setValue(details.course,forKey:"course")        }
+        do
+        {
+            try context.save()
+        }
+        catch let err
+        {
+            success = false
+            errors = err.localizedDescription
+            
+        }
+        return success
+    }
+    func fetchData()
+    {
+        let appDel = UIApplication.shared.delegate as! AppDelegate
+        let context = appDel.persistentContainer.viewContext
+        let frequest = NSFetchRequest<NSFetchRequestResult>(entityName: "QINF")
+        frequest.returnsObjectsAsFaults = false
+        do
+        {
+            
+            let result = try context.fetch(frequest)
+            for data in result as! [NSManagedObject]
+            {
+                
+                let qid = Int(data.value(forKey: "qid") as! String)
+                let description = data.value(forKey: "question") as! String
+                let answer = data.value(forKey: "answer") as! String
+                let course = data.value(forKey: "course") as! String
+                let imageurl = data.value(forKey: "imageurl") as! String
+                let record = entry(qid: qid!, course: course, description: description, answer: answer, imageurl: imageurl)
+                entries.append(record)
+            }
+        }
+        catch let err as NSError
+        {
+            
+        }
+    }
+    func clearStore(verbosity:Int) -> Bool
+    {
+        var success = true
+        let appDel = UIApplication.shared.delegate as! AppDelegate
+        let context = appDel.persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "QINF")
+        let batchDeleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        do
+        {
+            try context.execute(batchDeleteRequest)
+            if verbosity == 1
+            {
+                UIAlertView(title: "Message", message: "Success Deleting", delegate: nil, cancelButtonTitle: "OK").show()
+                
+            }
+            
+        }
+        catch
+        {
+            success = false
+        }
+        return success
+    }    /*
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation

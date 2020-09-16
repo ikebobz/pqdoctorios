@@ -10,6 +10,10 @@ import UIKit
 import CoreData
 
 class appMapViewController:UIViewController,UIPickerViewDelegate,UIPickerViewDataSource {
+    @IBAction func deleteStore(_ sender: Any) {
+        clearStore(verbosity: 1)
+    }
+    @IBOutlet weak var btnClear: UIButton!
     @IBAction func loadCourse(_ sender: Any)
     {
     performSegue(withIdentifier: "_toMain", sender: self)

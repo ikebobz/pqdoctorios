@@ -20,7 +20,7 @@ class mainViewController: UIViewController {
     var qno = 0
     var errors = ""
     var oldVal:Double=0
-    var courseId:String = "MIT802"
+    var courseId:String = ""
     var entries:[entry] = [entry]()
     struct reply:Codable
     {
@@ -34,6 +34,9 @@ class mainViewController: UIViewController {
         let description:String
         let answer:String
         let imageurl:String
+        let colnum : String
+        let rownum : Int
+        let content : String
     }
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -101,9 +104,16 @@ class mainViewController: UIViewController {
                 DispatchQueue.main.async
                     {
                         self.fetchData()
+                        if self.entries.count == 0
+                        {
+                        self.qindex.text = "Course not set"
+                        UIAlertView(title: "Feedback", message:"Selected Course has not been set", delegate: nil, cancelButtonTitle: "OK").show()
+                        }
+                        else {
                         self.uiTextView.text = self.entries[self.qno].description
                         self.qindex.text = String(self.entries.count) + " questions"
                         UIAlertView(title: "Feedback", message:"Could not fetch entries..using cached version", delegate: nil, cancelButtonTitle: "OK").show()
+                        }
                         self.activityIndicator.stopAnimating()
                 }
                 return
@@ -156,7 +166,12 @@ class mainViewController: UIViewController {
             newcourse.setValue(details.description,forKey:"question")
             newcourse.setValue(details.answer,forKey:"answer")
             newcourse.setValue(details.imageurl,forKey:"imageurl")
-            newcourse.setValue(details.course,forKey:"course")        }
+            newcourse.setValue(details.course,forKey:"course")
+            newcourse.setValue(details.course,forKey:"colnum")
+            newcourse.setValue(details.course,forKey:"rownum")
+            newcourse.setValue(details.course,forKey:"content")
+            
+        }
         do
         {
             try context.save()
@@ -181,13 +196,16 @@ class mainViewController: UIViewController {
             let result = try context.fetch(frequest)
             for data in result as! [NSManagedObject]
             {
-                
+                let course = data.value(forKey: "course") as! String
+                if course != courseId {continue}
                 let qid = Int(data.value(forKey: "qid") as! String)
                 let description = data.value(forKey: "question") as! String
                 let answer = data.value(forKey: "answer") as! String
-                let course = data.value(forKey: "course") as! String
                 let imageurl = data.value(forKey: "imageurl") as! String
-                let record = entry(qid: qid!, course: course, description: description, answer: answer, imageurl: imageurl)
+                let rownum = Int(data.value(forKey: "rownum") as! String)
+                let colnum = data.value(forKey: "colnum") as! String
+                let content = data.value(forKey: "content") as! String
+                let record = entry(qid: qid!, course: course, description: description, answer: answer, imageurl: imageurl,colnum:colnum,rownum:rownum!,content:content)
                 entries.append(record)
             }
         }

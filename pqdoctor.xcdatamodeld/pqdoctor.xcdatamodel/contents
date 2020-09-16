@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14460.32" systemVersion="17G66" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="COURSE" representedClassName="COURSE" syncable="YES" codeGenerationType="class">
+        <attribute name="courseid" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="courseinfo" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="QINF" representedClassName="QINF" syncable="YES" codeGenerationType="class">
+        <attribute name="answer" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="colnum" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="content" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="course" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="imageurl" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="qid" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="question" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="rownum" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="COURSE" positionX="-63" positionY="18" width="128" height="75"/>
+        <element name="QINF" positionX="-63" positionY="-18" width="128" height="165"/>
+    </elements>
+</model>

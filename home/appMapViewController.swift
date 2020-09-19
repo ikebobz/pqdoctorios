@@ -11,11 +11,20 @@ import CoreData
 
 class appMapViewController:UIViewController,UIPickerViewDelegate,UIPickerViewDataSource {
     @IBAction func deleteStore(_ sender: Any) {
-        clearStore(verbosity: 1)
+        var delres = true
+        delres = clearStore(storeName: "COURSE",verbosity: 0)
+        delres = clearStore(storeName: "QINF",verbosity: 0)
+        if delres {
+        UIAlertView(title: "Message", message: "Success Deleting", delegate: nil, cancelButtonTitle: "OK").show()
+            
+        }
+        
     }
+    
     @IBOutlet weak var btnClear: UIButton!
     @IBAction func loadCourse(_ sender: Any)
     {
+    //clearStore(verbosity: 1)
     performSegue(withIdentifier: "_toMain", sender: self)
     }
     @IBOutlet weak var btnLoad: UIButton!
@@ -102,8 +111,9 @@ class appMapViewController:UIViewController,UIPickerViewDelegate,UIPickerViewDat
     
         if let feedback = try? JSONDecoder().decode(reply.self,from:data)
         {
-            self.clearStore(verbosity: 0)
+            
             DispatchQueue.main.async {
+                self.clearStore(storeName:"COURSE",verbosity: 0)
                 if !feedback.data.isEmpty
                 {
                     self.picker.delegate = self
@@ -159,12 +169,12 @@ class appMapViewController:UIViewController,UIPickerViewDelegate,UIPickerViewDat
         }
     return success
     }
-    func clearStore(verbosity:Int) -> Bool
+    func clearStore(storeName:String,verbosity:Int) -> Bool
     {
         var success = true
         let appDel = UIApplication.shared.delegate as! AppDelegate
         let context = appDel.persistentContainer.viewContext
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "COURSE")
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: storeName)
         let batchDeleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
         do
         {

@@ -38,7 +38,36 @@ class mainViewController: UIViewController {
         let rownum : Int
         let content : String
     }
-    override func viewDidLoad() {
+    var raw:[[[String]]] = [[[String]]]()
+    var headers = [[String]]()
+    func processinto2d(data:String) -> [[String]]
+    {
+        var transposed = [[String]]()
+        let initial1d = data.components(separatedBy: ";")
+        var initial2d = [[String]]()
+        for onedarr in initial1d
+        {
+         initial2d.append(onedarr.components(separatedBy: ","))
+        }
+        transposed = transposer(source: initial2d)
+        return transposed
+    }
+    func transposer(source:[[String]]) -> [[String]]
+    {
+        if source.isEmpty {return source}
+        var result = [[String]]()
+        for index in 0..<source.first!.count
+        {
+            result.append(source.map{$0[index]})
+        }
+        return result
+    }
+    func addHeaders(source:String)
+    {
+       let headers = source.components(separatedBy: ",")
+        self.headers.append(headers)
+    }
+        override func viewDidLoad() {
         super.viewDidLoad()
         qindex.text = "Fetching Questions......"
         activityIndicator.hidesWhenStopped = true
@@ -129,6 +158,11 @@ class mainViewController: UIViewController {
                         for eachEntry in feedback.data
                         {
                             self.entries.append(eachEntry)
+                            if eachEntry.content != "X"
+                            {
+                            self.addHeaders(source: eachEntry.colnum)
+                            self.raw.append(self.processinto2d(data: eachEntry.content))
+                            }
                         }
                         self.uiTextView.text = self.entries[self.qno].description
                         self.qindex.text = String(self.entries.count) + " questions"
@@ -167,9 +201,9 @@ class mainViewController: UIViewController {
             newcourse.setValue(details.answer,forKey:"answer")
             newcourse.setValue(details.imageurl,forKey:"imageurl")
             newcourse.setValue(details.course,forKey:"course")
-            newcourse.setValue(details.course,forKey:"colnum")
-            newcourse.setValue(details.course,forKey:"rownum")
-            newcourse.setValue(details.course,forKey:"content")
+            newcourse.setValue(details.colnum,forKey:"colnum")
+            newcourse.setValue(String(details.rownum),forKey:"rownum")
+            newcourse.setValue(details.content,forKey:"content")
             
         }
         do
@@ -220,6 +254,7 @@ class mainViewController: UIViewController {
         let appDel = UIApplication.shared.delegate as! AppDelegate
         let context = appDel.persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "QINF")
+        fetchRequest.predicate = NSPredicate(format: "course=%@",courseId as CVarArg)
         let batchDeleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
         do
         {

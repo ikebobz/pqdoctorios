@@ -192,12 +192,12 @@
                                 <rect key="frame" x="177" y="275" width="20" height="20"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </activityIndicatorView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0kc-ic-T6R">
-                                <rect key="frame" x="16" y="430" width="209" height="74"/>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="W4h-UK-2it">
+                                <rect key="frame" x="144" y="364" width="93" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Clear"/>
+                                <state key="normal" title="Reset Stores"/>
                                 <connections>
-                                    <action selector="deleteStore:" destination="oTj-9c-8gU" eventType="touchUpInside" id="kcS-Hq-sn2"/>
+                                    <action selector="deleteStore:" destination="oTj-9c-8gU" eventType="touchUpInside" id="7NM-mo-Pmc"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -206,7 +206,7 @@
                     </view>
                     <connections>
                         <outlet property="activityIndicator" destination="951-iN-Q9j" id="qZX-Dd-CYo"/>
-                        <outlet property="btnClear" destination="0kc-ic-T6R" id="ZnM-jD-u4m"/>
+                        <outlet property="btnClear" destination="W4h-UK-2it" id="CWL-Ol-7X2"/>
                         <outlet property="btnLoad" destination="uEy-oa-SoV" id="5mR-te-1WN"/>
                         <outlet property="picker" destination="ujM-Fj-cj3" id="X36-HK-GwZ"/>
                         <segue destination="mU8-L6-5dv" kind="show" identifier="_toMain" id="RND-m5-QVk"/>

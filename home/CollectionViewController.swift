@@ -16,42 +16,25 @@ class CollectionViewCell:UICollectionViewCell
 private let reuseIdentifier = "cvwcell"
 
 class CollectionViewController:UICollectionViewController,UICollectionViewDelegateFlowLayout {
-    var items:[[String]] = [["january","february","march"],["cat","dog","parrot"],["mars","mercury","venus"],["london","DC","berlin"]]
+    var headers = [String]()
+    //var raws = [[String]]()
+    var items = [[[String]]]() /*[["january","february","march"],["cat","dog","parrot"],["mars","mercury","venus"],["london","DC","berlin"]]*/
     override func viewDidLoad() {
         super.viewDidLoad()
-        /*let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
-        self.collectionView.collectionViewLayout = layout*/
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Register cell classes
-        /*self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)*/
-
-        // Do any additional setup after loading the view.
+        
     }
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using [segue destinationViewController].
-        // Pass the selected object to the new view controller.
-    }
-    */
-
-    // MARK: UICollectionViewDataSource
+    
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return items.count
+        return items[0].count
     }
 
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
-        return items[section].count
+        return items[0][section].count
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -69,7 +52,7 @@ class CollectionViewController:UICollectionViewController,UICollectionViewDelega
             xindex = xindex + 100
         }*/
         
-        cell.txtLabel?.text = items[indexPath.section][indexPath.item]
+        cell.txtLabel?.text = items[0][indexPath.section][indexPath.item]
         return cell
     }
     

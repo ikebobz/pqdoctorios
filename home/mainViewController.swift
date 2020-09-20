@@ -17,6 +17,7 @@ class mainViewController: UIViewController {
     @IBOutlet weak var uiBtnImage: UIButton!
     @IBOutlet weak var uiTextView: UITextView!
     @IBOutlet weak var qindex: UILabel!
+    var map = [Int:Int]()
     var qno = 0
     var errors = ""
     var oldVal:Double=0
@@ -54,11 +55,18 @@ class mainViewController: UIViewController {
     }
     func transposer(source:[[String]]) -> [[String]]
     {
+        var copy:[[String]]
         if source.isEmpty {return source}
-        var result = [[String]]()
-        for index in 0..<source.first!.count
+        copy = source.map{$0}
+        if copy.first!.count > copy.last!.count
         {
-            result.append(source.map{$0[index]})
+            
+            copy.removeLast()
+        }
+        var result = [[String]]()
+        for index in 0..<copy.first!.count
+        {
+            result.append(copy.map{$0[index]})
         }
         return result
     }
@@ -75,6 +83,19 @@ class mainViewController: UIViewController {
         fetchAnswer()
         
         // Do any additional setup after loading the view.
+    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.destination is CollectionViewController
+        {
+            let vc = segue.destination as? CollectionViewController
+            let val = map[qno]
+            let noheaders = self.headers[val!].count
+            vc?.headers = self.headers[val!]
+            for index in 0..<noheaders
+            {
+             vc?.items.append(raw[val! + index])
+            }
+        }
     }
     @IBAction func switchToggle(_ sender: Any)
     {
@@ -113,6 +134,17 @@ class mainViewController: UIViewController {
     {
      uiSwitch.setOn(true, animated: false)
     }
+        if entries[qno].content != "X"
+        {
+            uiBtnTable.backgroundColor=UIColor.blue
+            uiBtnTable.setTitleColor(UIColor.white, for: .normal)
+            
+        }
+        else
+        {
+            uiBtnTable.backgroundColor=UIColor.white
+            uiBtnTable.setTitleColor(UIColor.blue, for: .normal)
+        }
     }
     
     func fetchAnswer()
@@ -155,14 +187,23 @@ class mainViewController: UIViewController {
                     if !feedback.data.isEmpty
                     {
                         do{
+                            var ctr1 = 0
+                            var ctr2 = 0
                         for eachEntry in feedback.data
                         {
                             self.entries.append(eachEntry)
                             if eachEntry.content != "X"
                             {
+                            self.map[ctr1] = ctr2
                             self.addHeaders(source: eachEntry.colnum)
-                            self.raw.append(self.processinto2d(data: eachEntry.content))
+                        let stringTable = eachEntry.content.components(separatedBy: "&")
+                                for value in stringTable
+                                {
+                            self.raw.append(self.processinto2d(data: value))
+                                }
+                                ctr2 = ctr2 + 1
                             }
+                            ctr1 = ctr1 + 1
                         }
                         self.uiTextView.text = self.entries[self.qno].description
                         self.qindex.text = String(self.entries.count) + " questions"

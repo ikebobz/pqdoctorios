@@ -17,12 +17,17 @@ class mainViewController: UIViewController {
     @IBOutlet weak var uiBtnImage: UIButton!
     @IBOutlet weak var uiTextView: UITextView!
     @IBOutlet weak var qindex: UILabel!
-    var map = [Int:Int]()
+    var map = [Int:track]()
     var qno = 0
     var errors = ""
     var oldVal:Double=0
     var courseId:String = ""
     var entries:[entry] = [entry]()
+    struct track:Codable
+    {
+        let main:Int
+        let sec:Int
+    }
     struct reply:Codable
     {
         let success:Int
@@ -85,17 +90,19 @@ class mainViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.destination is CollectionViewController
+       if segue.destination is tabViewController
         {
-            let vc = segue.destination as? CollectionViewController
+            let vc = segue.destination as? tabViewController
             let val = map[qno]
-            let noheaders = self.headers[val!].count
-            vc?.headers = self.headers[val!]
+            let noheaders = self.headers[val!.main].count
+            vc?.headers = self.headers[val!.main]
             for index in 0..<noheaders
             {
-             vc?.items.append(raw[val! + index])
+             vc?.item.append(raw[val!.sec + index])
             }
         }
+        //let a = headers
+        //let b = raw
     }
     @IBAction func switchToggle(_ sender: Any)
     {
@@ -136,14 +143,14 @@ class mainViewController: UIViewController {
     }
         if entries[qno].content != "X"
         {
-            uiBtnTable.backgroundColor=UIColor.blue
+            uiBtnTable.backgroundColor=UIColor.green
             uiBtnTable.setTitleColor(UIColor.white, for: .normal)
             
         }
         else
         {
             uiBtnTable.backgroundColor=UIColor.white
-            uiBtnTable.setTitleColor(UIColor.blue, for: .normal)
+            uiBtnTable.setTitleColor(UIColor.white, for: .normal)
         }
     }
     
@@ -165,6 +172,7 @@ class mainViewController: UIViewController {
                 DispatchQueue.main.async
                     {
                         self.fetchData()
+                        //let a = self.entries
                         if self.entries.count == 0
                         {
                         self.qindex.text = "Course not set"
@@ -189,18 +197,20 @@ class mainViewController: UIViewController {
                         do{
                             var ctr1 = 0
                             var ctr2 = 0
+                            
                         for eachEntry in feedback.data
                         {
                             self.entries.append(eachEntry)
                             if eachEntry.content != "X"
                             {
-                            self.map[ctr1] = ctr2
-                            self.addHeaders(source: eachEntry.colnum)
+                        self.map[ctr1] = track(main: ctr2, sec: self.raw.count)
+                        self.addHeaders(source: eachEntry.colnum)
                         let stringTable = eachEntry.content.components(separatedBy: "&")
                                 for value in stringTable
                                 {
                             self.raw.append(self.processinto2d(data: value))
                                 }
+                                
                                 ctr2 = ctr2 + 1
                             }
                             ctr1 = ctr1 + 1
@@ -267,7 +277,8 @@ class mainViewController: UIViewController {
         frequest.returnsObjectsAsFaults = false
         do
         {
-            
+            var ctr1 = 0
+            var ctr2 = 0
             let result = try context.fetch(frequest)
             for data in result as! [NSManagedObject]
             {
@@ -282,6 +293,19 @@ class mainViewController: UIViewController {
                 let content = data.value(forKey: "content") as! String
                 let record = entry(qid: qid!, course: course, description: description, answer: answer, imageurl: imageurl,colnum:colnum,rownum:rownum!,content:content)
                 entries.append(record)
+                if content != "X"
+                {
+                    self.map[ctr1] = track(main: ctr2, sec: self.raw.count)
+                    self.addHeaders(source:colnum)
+                    let stringTable = content.components(separatedBy: "&")
+                    for value in stringTable
+                    {
+                        self.raw.append(self.processinto2d(data: value))
+                    }
+                    
+                    ctr2 = ctr2 + 1
+                }
+                    ctr1 = ctr1 + 1
             }
         }
         catch let err as NSError

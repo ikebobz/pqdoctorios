@@ -7,11 +7,7 @@
 //
 
 import UIKit
-class CollectionViewCell:UICollectionViewCell
-{
-    @IBOutlet weak var txtLabel: UILabel!
-    
-}
+
 
 private let reuseIdentifier = "cvwcell"
 
@@ -21,9 +17,20 @@ class CollectionViewController:UICollectionViewController,UICollectionViewDelega
     var items = [[[String]]]() /*[["january","february","march"],["cat","dog","parrot"],["mars","mercury","venus"],["london","DC","berlin"]]*/
     override func viewDidLoad() {
         super.viewDidLoad()
+        addButton()
         
     }
-
+   func addButton()
+   {
+   let button = UIButton()
+    button.setTitle("Next", for: .normal)
+    button.setTitleColor(UIColor.blue, for: .normal)
+    self.view.addSubview(button)
+    button.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+    button.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+    button.widthAnchor.constraint(equalToConstant:100).isActive = true
+    button.heightAnchor.constraint(equalToConstant:50).isActive = true
+    }
     
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -38,7 +45,7 @@ class CollectionViewController:UICollectionViewController,UICollectionViewDelega
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! CollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
         /*var colsize = 0
         var xindex = 0
         while colsize < items[0].count
@@ -52,7 +59,7 @@ class CollectionViewController:UICollectionViewController,UICollectionViewDelega
             xindex = xindex + 100
         }*/
         
-        cell.txtLabel?.text = items[0][indexPath.section][indexPath.item]
+        //cell.txtLabel?.text = items[0][indexPath.section][indexPath.item]
         return cell
     }
     

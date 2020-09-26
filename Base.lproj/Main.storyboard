@@ -305,7 +305,7 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" alwaysBounceHorizontal="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="84N-cu-S38">
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="84N-cu-S38">
                                 <rect key="frame" x="16" y="169" width="336" height="444"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -323,9 +323,11 @@
                                             <rect key="frame" x="0.0" y="0.0" width="286" height="61"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="T9a-L4-DzE">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="T9a-L4-DzE">
                                                     <rect key="frame" x="20" y="11" width="192" height="39"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" relation="lessThanOrEqual" constant="150" id="q3Y-3e-a2S"/>
+                                                    </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -333,6 +335,7 @@
                                             </subviews>
                                         </view>
                                         <connections>
+                                            <outlet property="maxWidthConstraint" destination="q3Y-3e-a2S" id="fkG-Xc-ctP"/>
                                             <outlet property="txtLabel" destination="T9a-L4-DzE" id="p63-CW-k4h"/>
                                         </connections>
                                     </collectionViewCell>
@@ -360,6 +363,7 @@
                     </view>
                     <connections>
                         <outlet property="btnNext" destination="sO1-of-yvB" id="rSY-SC-zW4"/>
+                        <outlet property="collectionLayout" destination="iam-A8-qgQ" id="wxZ-3z-dRh"/>
                         <outlet property="mCollectionView" destination="84N-cu-S38" id="IJc-qx-srI"/>
                         <outlet property="tableLabel" destination="45T-CD-N3s" id="3Ue-hW-90z"/>
                     </connections>

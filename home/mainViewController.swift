@@ -143,14 +143,14 @@ class mainViewController: UIViewController {
     }
         if entries[qno].content != "X"
         {
-            uiBtnTable.backgroundColor=UIColor.green
+            uiBtnTable.backgroundColor=UIColor.cyan
             uiBtnTable.setTitleColor(UIColor.white, for: .normal)
             
         }
         else
         {
             uiBtnTable.backgroundColor=UIColor.white
-            uiBtnTable.setTitleColor(UIColor.white, for: .normal)
+          uiBtnTable.setTitleColor(UIColor.cyan,for: .normal)
         }
     }
     

@@ -12,7 +12,7 @@ class CollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var txtLabel: UILabel!
     override func awakeFromNib() {
         super.awakeFromNib()
-        txtLabel.preferredMaxLayoutWidth = 500
+        //txtLabel.preferredMaxLayoutWidth = 500
         contentView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([contentView.leftAnchor.constraint(equalTo: leftAnchor),contentView.rightAnchor.constraint(equalTo: rightAnchor),contentView.topAnchor.constraint(equalTo: topAnchor),contentView.bottomAnchor.constraint(equalTo: bottomAnchor)])
     }

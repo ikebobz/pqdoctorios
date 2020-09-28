@@ -94,6 +94,7 @@ class mainViewController: UIViewController {
         {
             let vc = segue.destination as? tabViewController
             let val = map[qno]
+            if val == nil {return}
             let noheaders = self.headers[val!.main].count
             vc?.headers = self.headers[val!.main]
             for index in 0..<noheaders
@@ -141,16 +142,21 @@ class mainViewController: UIViewController {
     {
      uiSwitch.setOn(true, animated: false)
     }
+        let tableInfo = entries[qno].content
         if entries[qno].content != "X"
         {
-            uiBtnTable.backgroundColor=UIColor.cyan
+            /*uiBtnTable.backgroundColor=UIColor.cyan
             uiBtnTable.setTitleColor(UIColor.white, for: .normal)
+            uiBtnTable.titleLabel?.text = "Table(" + String(tableInfo.components(separatedBy: "&").count) + ")"*/
+            uiBtnTable.isEnabled = true
             
         }
         else
         {
-            uiBtnTable.backgroundColor=UIColor.white
+            /*uiBtnTable.backgroundColor=UIColor.white
           uiBtnTable.setTitleColor(UIColor.cyan,for: .normal)
+            uiBtnTable.titleLabel?.text = "Table"*/
+            uiBtnTable.isEnabled = false
         }
     }
     
@@ -181,6 +187,8 @@ class mainViewController: UIViewController {
                         else {
                         self.uiTextView.text = self.entries[self.qno].description
                         self.qindex.text = String(self.entries.count) + " questions"
+                            if self.entries[self.qno].content == "X"
+                            {self.uiBtnTable.isEnabled = false}
                         UIAlertView(title: "Feedback", message:"Could not fetch entries..using cached version", delegate: nil, cancelButtonTitle: "OK").show()
                         }
                         self.activityIndicator.stopAnimating()

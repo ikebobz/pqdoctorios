@@ -34,6 +34,7 @@ extension UILabel
 private let reuseIdentifier = "cell"
 class tabViewController: UIViewController,UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout
 {
+    @IBOutlet weak var mScrollView: UIScrollView!
     @IBOutlet weak var collectionLayout: UICollectionViewFlowLayout!
     {
         didSet {
@@ -88,17 +89,19 @@ class tabViewController: UIViewController,UICollectionViewDataSource,UICollectio
         self.tableLabel?.text = headers[indx]
         if headers.count > 1
         {
-          btnNext.backgroundColor = UIColor.cyan
-          btnNext.setTitleColor(UIColor.white, for: .normal)
+          /*btnNext.backgroundColor = UIColor.cyan
+          btnNext.setTitleColor(UIColor.white, for: .normal)*/
+            btnNext.isEnabled = true
         }
+        else {btnNext.isEnabled = false}
         //self.mCollectionView.register(CollectionViewCell.self, forCellWithReuseIdentifier: "cellid")
         
 
     }
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        self.mCollectionView.delaysContentTouches = true
+        self.mScrollView.contentSize = CGSize(width:self.mCollectionView.frame.width,height:self.mCollectionView.frame.height + 100)
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
        //return CGSize(width: 150, height: 30)
@@ -109,10 +112,10 @@ class tabViewController: UIViewController,UICollectionViewDataSource,UICollectio
         
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 1.0
+        return 0.0
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 1.0
+        return 0.0
     }
     func maxSize(section:[String],font:UIFont) -> CGFloat
     {

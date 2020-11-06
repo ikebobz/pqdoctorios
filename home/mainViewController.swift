@@ -102,6 +102,22 @@ class mainViewController: UIViewController {
              vc?.item.append(raw[val!.sec + index])
             }
         }
+        if segue.destination is ImgViewController
+        {
+            let vc = segue.destination as? ImgViewController
+            let parts = entries[qno].imageurl.components(separatedBy: "&")
+            if parts.count > 1
+            {
+            vc?.figureLabel = parts[0]
+            vc?.imageurl = parts[1]
+            }
+            else
+            {
+                vc?.imageurl = parts[0]
+                vc?.figureLabel = "Question Figure"
+            }
+        }
+        
         //let a = headers
         //let b = raw
     }
@@ -158,6 +174,8 @@ class mainViewController: UIViewController {
             uiBtnTable.titleLabel?.text = "Table"*/
             uiBtnTable.isEnabled = false
         }
+        if entries[qno].imageurl != ""
+        {uiBtnImage.isEnabled = true} else {uiBtnImage.isEnabled = false}
     }
     
     func fetchAnswer()
@@ -188,6 +206,8 @@ class mainViewController: UIViewController {
                         self.uiTextView.text = self.entries[self.qno].description
                         self.qindex.text = String(self.entries.count) + " questions"
                             if self.entries[self.qno].content == "X"
+                            {self.uiBtnTable.isEnabled = false}
+                            if self.entries[self.qno].imageurl == ""
                             {self.uiBtnTable.isEnabled = false}
                         UIAlertView(title: "Feedback", message:"Could not fetch entries..using cached version", delegate: nil, cancelButtonTitle: "OK").show()
                         }
@@ -226,6 +246,7 @@ class mainViewController: UIViewController {
                         self.uiTextView.text = self.entries[self.qno].description
                         self.qindex.text = String(self.entries.count) + " questions"
                             if !self.persistEntres() {throw NSError(domain: "Caching unsuccessful", code: 41, userInfo: nil)}
+                             self.savetoDevice()
                         UIAlertView(title: "Message", message: "Questions loaded successfully", delegate: nil, cancelButtonTitle: "OK").show()
                         
                         }
@@ -258,7 +279,13 @@ class mainViewController: UIViewController {
             newcourse.setValue(String(details.qid),forKey:"qid")
             newcourse.setValue(details.description,forKey:"question")
             newcourse.setValue(details.answer,forKey:"answer")
+            if details.imageurl == "" {
             newcourse.setValue(details.imageurl,forKey:"imageurl")
+            } else
+            {
+                newcourse.setValue(editUrl(source:details.imageurl),forKey:"imageurl")
+                
+            }
             newcourse.setValue(details.course,forKey:"course")
             newcourse.setValue(details.colnum,forKey:"colnum")
             newcourse.setValue(String(details.rownum),forKey:"rownum")
@@ -344,14 +371,35 @@ class mainViewController: UIViewController {
             success = false
         }
         return success
-    }    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
     }
-    */
-
+    func editUrl(source:String) -> String
+    {
+     var edited:URL
+     let srcurl = URL(string: source.components(separatedBy: "&")[1])
+     edited = getDocumentsDirectory().appendingPathComponent(srcurl!.lastPathComponent)
+     let path = edited.absoluteString
+     return path
+    }
+    func getDocumentsDirectory() -> URL
+    {
+    let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+    return paths[0]
+    }
+    func savetoDevice()
+    {
+        for entry in entries {
+            if entry.imageurl != ""{
+        let name = entry.imageurl
+           let comps = name.components(separatedBy: "&")
+           let srcuri = URL(string:comps[1])
+           DispatchQueue.global().async{
+            [weak self ] in
+            if let data = try? Data(contentsOf: srcuri!){
+                if let image = UIImage(data:data){
+            //implement image saving here
+                if let data = image.pngData(){
+                let file = self?.editUrl(source:name)
+                let filename = URL(string: file!)
+                try? data.write(to:filename!)
+                    }}}}}}}
 }
